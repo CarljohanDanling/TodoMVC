@@ -1,20 +1,43 @@
 // sätt alla eventlisteners i början av programmet - "Jakob Kallin"
 
-const section = document.querySelector("#activity-section");
-section.remove();
+const activity = document.querySelector("#activity");
+activity.remove();
+
+//let activities = [];
+let activityTexts = [];
 
 const form = document.querySelector("form");
 form.onsubmit = event => {
     event.preventDefault();
 
-    // let paragraph = document.createElement("P");
     const userInput = document.querySelector("#todo-input");
     const text = document.createTextNode(userInput.value);
-    // paragraph.appendChild(text);
 
-    const clone = section.cloneNode(true);
-    document.body.appendChild(clone);
+    activityTexts.push(text);
+    renderActivity(text);
 
-    document.querySelector("#activity-section").querySelector("P").appendChild(text);
+    form.reset();
+    /*
+    document.querySelector("[id=" + clone.id + "]")
+        .querySelector("P")
+        .appendChild(text);
+    */
+}
 
+function renderActivity(text) {
+    let clone = activity.cloneNode(true);
+    document.querySelector("#activity-section")
+        .appendChild(clone);
+
+    clone.querySelector("P")
+        .appendChild(text);
+
+    clone.querySelector(".removal")
+        .addEventListener("click", () => {
+            removeActivity(clone);
+        });
+}
+
+function removeActivity(clone) {
+    clone.remove();
 }
