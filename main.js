@@ -32,7 +32,7 @@ function renderActivity(text) {
     clone.querySelector("P")
         .appendChild(text);
 
-    clone.querySelector(".removal")
+    clone.querySelector(".removal-sign")
         .addEventListener("click", () => {
             removeActivity(clone);
         });
