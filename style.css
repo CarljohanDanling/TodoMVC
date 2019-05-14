@@ -61,7 +61,6 @@ body {
 
 #activity-section>div {
     display: flex;
-    flex-direction: row;
 }
 
 .fields-styling {
@@ -79,7 +78,8 @@ body {
 }
 
 .removal-sign {
-    min-width: 22px;
+    position: absolute;
+    right: 5px;
 }
 
 .fields-styling> :first-child {
@@ -88,8 +88,14 @@ body {
     min-width: 3.75em
 }
 
-.removal {
+.removal-sign {
+    opacity: 0.5;
+    fill: #e5a2a2;
     visibility: hidden;
+}
+
+.removal-sign:hover {
+    opacity: 1;
 }
 
 #selector-section {
@@ -99,7 +105,11 @@ body {
     min-height: 50px;
     color: #777;
     align-content: center;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 0 8px 0 -3px #f6f6f6, 0 9px 1px -3px rgba(0, 0, 0, 0.2), 0 16px 0 -6px #f6f6f6, 0 17px 2px -6px rgba(0, 0, 0, 0.2);
+    /* box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 
+    0 8px 0 -3px #f6f6f6, 
+    0 9px 1px -3px rgba(0, 0, 0, 0.2), 
+    0 16px 0 -6px #f6f6f6, 
+    0 17px 2px -6px rgba(0, 0, 0, 0.2); */
 }
 
 nav {

@@ -51,7 +51,22 @@ function renderActivity(text) {
         .addEventListener("click", () => {
             removeActivity(clone);
         });
+
+    removalSignActivity(clone);
 }
+
+function removalSignActivity(clone) {
+    clone.addEventListener("mouseover", () => {
+        clone.querySelector(".removal-sign")
+            .style.visibility = "visible";
+    });
+
+    clone.addEventListener("mouseout", () => {
+        clone.querySelector(".removal-sign")
+            .style.visibility = "hidden";
+    });
+}
+
 
 function removeActivity(clone) {
     clone.remove();
