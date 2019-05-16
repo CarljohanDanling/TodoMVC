@@ -58,8 +58,6 @@ input[type=checkbox] {
     display: none;
 }
 
-.unchecked {}
-
 .checked {
     display: none;
 }
@@ -67,6 +65,13 @@ input[type=checkbox] {
 .activity-text {
     margin-right: 1em;
     word-break: break-all;
+}
+
+.activity-text-checked {
+    margin-right: 1em;
+    word-break: break-all;
+    opacity: 0.5;
+    text-decoration: line-through;
 }
 
 #activity-section>div {

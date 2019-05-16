@@ -32,9 +32,10 @@ selectArrow.addEventListener("click", () => {
         setOpacityForDownArrow();
     }
     itemsLeftManager();
+    changeClassOnActivityText();
 });
 
-// Selektering av form och händelser kring formen.
+// Selektering av form och händelser kring form.
 const form = document.querySelector("form");
 form.onsubmit = event => {
     event.preventDefault();
@@ -45,6 +46,7 @@ form.onsubmit = event => {
     renderActivity(text);
     renderDownArrow();
     setOpacityForDownArrow();
+    visibilityDownArrow();
 
     activityIdCounter += 1;
     form.reset();
@@ -64,11 +66,12 @@ function renderActivity(text) {
 
     activities.push(clone);
 
-    clone.querySelector(".checkbox")
-        .addEventListener("click", () => {
+    clone.querySelector("#checkbox-input")
+        .addEventListener("change", (event) => {
             activityToggleStatus(clone);
             setOpacityForDownArrow();
             itemsLeftManager();
+            changeClassOnActivityText();
         })
 
     clone.querySelector(".removal-sign")
@@ -85,13 +88,21 @@ function renderActivity(text) {
 // Om det är > 1 så gör funktionen inget.
 // Om det är 0 aktiviteter i activities[] så tas down arrow bort.
 function renderDownArrow() {
-    if (activities.length === 1) {
+    if (document.getElementById("down-arrow") === null) {
         document.querySelector("#toggle-all")
             .appendChild(selectArrow);
-    } else if (activities.length > 1) {
+    }
+    else {
         return;
-    } else {
-        selectArrow.remove();
+    }
+}
+
+function visibilityDownArrow() {
+    if (activities.length >= 1) {
+        selectArrow.style.visibility = "visible";
+    }
+    else {
+        selectArrow.style.visibility = "hidden";
     }
 }
 
@@ -139,15 +150,15 @@ function removalSignActivity(clone) {
     });
 }
 
-// Tar bort en aktivitet från webbläsaren och även i activities[].
-// activities[] filtrerar bort den man valt att ta bort.
+// // Tar bort en aktivitet från webbläsaren och även i activities[].
+// // activities[] filtrerar bort den man valt att ta bort.
 function removeActivity(clone) {
     clone.remove();
     activities = activities.filter(a => a.id !== clone.id);
-    renderDownArrow();
+    visibilityDownArrow();
 }
 
-// Sätter opaciteten för down arrow.
+// // Sätter opaciteten för down arrow.
 function setOpacityForDownArrow() {
     if (checkIfAllActivtiesAreChecked() === true) {
         selectArrow.closest("div").style.opacity = "1.0";
@@ -157,7 +168,7 @@ function setOpacityForDownArrow() {
 }
 
 function itemsLeftManager() {
-    let nrLeft = document.querySelector("#nr-left");
+    let numberLeft = document.querySelector("#nr-left");
     let counter = 0;
     let itemsLeft = document.querySelector("#items-left");
 
@@ -168,12 +179,24 @@ function itemsLeftManager() {
         }
     })
 
-    nrLeft.textContent = counter;
-    
+    numberLeft.textContent = counter;
+
     if (counter > 1 || counter === 0) {
         itemsLeft.textContent = "items left";
     }
     else {
         itemsLeft.textContent = "item left";
     }
+}
+
+function changeClassOnActivityText() {
+    activities.forEach(a => {
+        if (a.querySelector('input[name="checkbox-input"]')
+            .checked === false) {
+            a.querySelector("P").className = "activity-text";
+        }
+        else {
+            a.querySelector("P").className = "activity-text-checked";
+        }
+    })
 }
