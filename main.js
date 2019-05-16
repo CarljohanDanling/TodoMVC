@@ -1,5 +1,6 @@
 // sätt alla eventlisteners i början av programmet - "Jakob Kallin"
 
+// Diverse deklarationer.
 const selectArrow = document.querySelector("#down-arrow");
 selectArrow.remove();
 
@@ -9,43 +10,48 @@ activity.remove();
 let activities = [];
 let activityIdCounter = 0;
 
-selectArrow.addEventListener("click", () => {
-    activities.forEach(a => {
-        a.querySelector('input[name="checkbox-input"]')
-            .checked = true;
-        activityToggleStatus(a);
-    })
-    checkIfAllActivtiesAreChecked();
-})
 
+// Funktionerna börjar här -->
+
+// eventListener för "markera/avmarkera alla aktiviteter-pilen".
+selectArrow.addEventListener("click", () => {
+    if (checkIfAllActivtiesAreChecked() === true) {
+        activities.forEach(a => {
+            a.querySelector('input[name="checkbox-input"]')
+                .checked = false;
+            activityToggleStatus(a);
+        })
+        setOpacityForDownArrow();
+    }
+    else {
+        activities.forEach(a => {
+            a.querySelector('input[name="checkbox-input"]')
+                .checked = true;
+            activityToggleStatus(a);
+        })
+        setOpacityForDownArrow();
+    }
+    itemsLeftManager();
+});
+
+// Selektering av form och händelser kring formen.
 const form = document.querySelector("form");
 form.onsubmit = event => {
     event.preventDefault();
-
-
 
     const userInput = document.querySelector("#todo-input");
     const text = document.createTextNode(userInput.value);
 
     renderActivity(text);
-    activityIdCounter += 1;
-
     renderDownArrow();
+    setOpacityForDownArrow();
 
+    activityIdCounter += 1;
     form.reset();
 }
 
-function renderDownArrow() {
-    if (activities.length === 1) {
-        document.querySelector("#toggle-all")
-            .appendChild(selectArrow);
-    } else if (activities.length > 1) {
-        return;
-    } else {
-        selectArrow.remove();
-    }
-}
-
+// Renderar aktiviteten och sätter lägger till i activities[].
+// Lägger till relaterade eventlisteners på checkbox och "remove" krysset. 
 function renderActivity(text) {
     let clone = activity.cloneNode(true);
     clone.id = clone.id + activityIdCounter;
@@ -61,17 +67,35 @@ function renderActivity(text) {
     clone.querySelector(".checkbox")
         .addEventListener("click", () => {
             activityToggleStatus(clone);
-            checkIfAllActivtiesAreChecked();
+            setOpacityForDownArrow();
+            itemsLeftManager();
         })
 
     clone.querySelector(".removal-sign")
         .addEventListener("click", () => {
             removeActivity(clone);
+            setOpacityForDownArrow();
+            itemsLeftManager();
         });
-
+    itemsLeftManager();
     removalSignActivity(clone);
 }
 
+// Renderar down arrow enbart om EN aktivitet finns i activities[].
+// Om det är > 1 så gör funktionen inget.
+// Om det är 0 aktiviteter i activities[] så tas down arrow bort.
+function renderDownArrow() {
+    if (activities.length === 1) {
+        document.querySelector("#toggle-all")
+            .appendChild(selectArrow);
+    } else if (activities.length > 1) {
+        return;
+    } else {
+        selectArrow.remove();
+    }
+}
+
+// Kontrollerar om alla aktiviteter har input "checked" eller ej.
 function checkIfAllActivtiesAreChecked() {
     let counter = 0;
 
@@ -83,15 +107,16 @@ function checkIfAllActivtiesAreChecked() {
     })
 
     if (counter === activities.length) {
-        selectArrow.closest("div").style.opacity = "1.0";
+        return true;
     } else {
-        selectArrow.closest("div").style.opacity = "0.2";
+        return false;
     }
-
 }
 
+// Sätter CSS-attribut på unchecked och checked SVG.
 function activityToggleStatus(clone) {
     let checkbox = clone.querySelector('input[name="checkbox-input"]');
+
     if (checkbox.checked === true) {
         clone.querySelector(".unchecked").style.display = "none";
         clone.querySelector(".checked").style.display = "block";
@@ -99,9 +124,9 @@ function activityToggleStatus(clone) {
         clone.querySelector(".unchecked").style.display = "block";
         clone.querySelector(".checked").style.display = "none";
     }
-
 }
 
+// Mouseover och mouseout för "remove" krysset.
 function removalSignActivity(clone) {
     clone.addEventListener("mouseover", () => {
         clone.querySelector(".removal-sign")
@@ -114,8 +139,41 @@ function removalSignActivity(clone) {
     });
 }
 
+// Tar bort en aktivitet från webbläsaren och även i activities[].
+// activities[] filtrerar bort den man valt att ta bort.
 function removeActivity(clone) {
     clone.remove();
     activities = activities.filter(a => a.id !== clone.id);
     renderDownArrow();
+}
+
+// Sätter opaciteten för down arrow.
+function setOpacityForDownArrow() {
+    if (checkIfAllActivtiesAreChecked() === true) {
+        selectArrow.closest("div").style.opacity = "1.0";
+    } else {
+        selectArrow.closest("div").style.opacity = "0.2";
+    }
+}
+
+function itemsLeftManager() {
+    let nrLeft = document.querySelector("#nr-left");
+    let counter = 0;
+    let itemsLeft = document.querySelector("#items-left");
+
+    activities.forEach(a => {
+        if (a.querySelector('input[name="checkbox-input"]')
+            .checked === false) {
+            counter++
+        }
+    })
+
+    nrLeft.textContent = counter;
+    
+    if (counter > 1 || counter === 0) {
+        itemsLeft.textContent = "items left";
+    }
+    else {
+        itemsLeft.textContent = "item left";
+    }
 }
