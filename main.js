@@ -168,9 +168,9 @@ function setOpacityForDownArrow() {
 }
 
 function itemsLeftManager() {
-    let numberLeft = document.querySelector("#nr-left");
+    let numberOfItemsLeft = document.querySelector("#nr-left");
+    let itemsLeftText = document.querySelector("#items-left");
     let counter = 0;
-    let itemsLeft = document.querySelector("#items-left");
 
     activities.forEach(a => {
         if (a.querySelector('input[name="checkbox-input"]')
@@ -178,14 +178,13 @@ function itemsLeftManager() {
             counter++
         }
     })
-
-    numberLeft.textContent = counter;
+    numberOfItemsLeft.textContent = counter;
 
     if (counter > 1 || counter === 0) {
-        itemsLeft.textContent = "items left";
+        itemsLeftText.textContent = "items left";
     }
     else {
-        itemsLeft.textContent = "item left";
+        itemsLeftText.textContent = "item left";
     }
 }
 

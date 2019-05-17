@@ -26,7 +26,7 @@ body {
 
 #input-section {
     display: grid;
-    grid-template-columns: 0.37fr auto;
+    grid-template-columns: 90px auto;
     background-color: white;
 }
 
@@ -74,7 +74,7 @@ input[type=checkbox] {
     text-decoration: line-through;
 }
 
-#activity-section>div {
+#activity-section div {
     display: flex;
 }
 
@@ -82,7 +82,7 @@ input[type=checkbox] {
     border-bottom: 1px solid lightgray;
 }
 
-.fields-styling>div {
+.fields-styling div {
     width: 100%;
     padding: 1em 0em 1em 0em;
     font-size: 1.5em;
