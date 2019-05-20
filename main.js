@@ -7,6 +7,8 @@ selectArrow.remove();
 const activity = document.querySelector("#activity");
 activity.remove();
 
+const selectionSection = document.querySelector(".selector-section");
+
 let activities = [];
 let activityIdCounter = 0;
 
@@ -44,6 +46,7 @@ form.onsubmit = event => {
     const text = document.createTextNode(userInput.value);
 
     renderActivity(text);
+    visabilitySelectionSection();
     renderDownArrow();
     setOpacityForDownArrow();
     visibilityDownArrow();
@@ -77,11 +80,23 @@ function renderActivity(text) {
     clone.querySelector(".removal-sign")
         .addEventListener("click", () => {
             removeActivity(clone);
+            visabilitySelectionSection();
             setOpacityForDownArrow();
             itemsLeftManager();
         });
     itemsLeftManager();
     removalSignActivity(clone);
+}
+
+function visabilitySelectionSection() {
+    if (activities.length > 0) {
+        selectionSection
+            .className = "selector-section-visible";
+    }
+    else {
+        selectionSection
+            .className = "selector-section";
+    }
 }
 
 // Renderar down arrow enbart om EN aktivitet finns i activities[].
