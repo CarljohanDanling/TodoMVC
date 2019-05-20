@@ -153,7 +153,7 @@ nav {
     border: 1px solid transparent;
 }
 
-#filtering a:hover {
+#filtering a:hover{
     border: 1px solid #ebd7d7;
     border-radius: 5px;
 }
@@ -161,6 +161,10 @@ nav {
 #clear-completed {
     text-decoration: none;
     color: #777;
+    border: none;
+    background: none;
+    font: inherit;
+    display: none;
 }
 
 #clear-completed:hover {

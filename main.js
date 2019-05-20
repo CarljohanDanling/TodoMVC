@@ -1,6 +1,11 @@
 // sätt alla eventlisteners i början av programmet - "Jakob Kallin"
 
 // Diverse deklarationer.
+let activities = [];
+let activitiesToRemove = [];
+let activityIdCounter = 0;
+let filteringOption = "";
+
 const selectArrow = document.querySelector("#down-arrow");
 selectArrow.remove();
 
@@ -8,12 +13,23 @@ const activity = document.querySelector("#activity");
 activity.remove();
 
 const selectionSection = document.querySelector(".selector-section");
+const clearCompleted = document.querySelector("#clear-completed");
+const filterAll = document.querySelector(".filter-all");
+const filterActive = document.querySelector(".filter-active");
+const filterCompleted = document.querySelector(".filter-completed");
 
-let activities = [];
-let activityIdCounter = 0;
+// Funktioner och EventListener börjar här -->
+filterAll.addEventListener("click", filterAllActivities);
 
+filterActive.addEventListener("click", (event) => {
+    filteringActivities(event);
+})
 
-// Funktionerna börjar här -->
+filterCompleted.addEventListener("click", (event) => {
+    filteringActivities(event);
+})
+
+clearCompleted.addEventListener("click", clearCompletedActivities);
 
 // eventListener för "markera/avmarkera alla aktiviteter-pilen".
 selectArrow.addEventListener("click", () => {
@@ -35,6 +51,7 @@ selectArrow.addEventListener("click", () => {
     }
     itemsLeftManager();
     changeClassOnActivityText();
+    visibilityClearCompleted();
 });
 
 // Selektering av form och händelser kring form.
@@ -50,6 +67,7 @@ form.onsubmit = event => {
     renderDownArrow();
     setOpacityForDownArrow();
     visibilityDownArrow();
+    filteringActivities(event);
 
     activityIdCounter += 1;
     form.reset();
@@ -75,6 +93,8 @@ function renderActivity(text) {
             setOpacityForDownArrow();
             itemsLeftManager();
             changeClassOnActivityText();
+            visibilityClearCompleted();
+            visibilityFiltering(clone);
         })
 
     clone.querySelector(".removal-sign")
@@ -83,9 +103,20 @@ function renderActivity(text) {
             visabilitySelectionSection();
             setOpacityForDownArrow();
             itemsLeftManager();
+            visibilityClearCompleted();
         });
     itemsLeftManager();
     removalSignActivity(clone);
+}
+
+function visibilityFiltering(clone) {
+    if (filteringOption === "filter-completed") {
+        clone.style.display = "none";
+    }
+
+    else if (filteringOption === "filter-active") {
+        clone.style.display = "none";
+    }
 }
 
 function visabilitySelectionSection() {
@@ -109,6 +140,15 @@ function renderDownArrow() {
     }
     else {
         return;
+    }
+}
+
+function visibilityClearCompleted() {
+    if (activities.some(a => a.querySelector('input[name="checkbox-input"]').checked === true)) {
+        clearCompleted.style.display = "block";
+    }
+    else {
+        clearCompleted.style.display = "none";
     }
 }
 
@@ -165,13 +205,6 @@ function removalSignActivity(clone) {
     });
 }
 
-// // Tar bort en aktivitet från webbläsaren och även i activities[].
-// // activities[] filtrerar bort den man valt att ta bort.
-function removeActivity(clone) {
-    clone.remove();
-    activities = activities.filter(a => a.id !== clone.id);
-    visibilityDownArrow();
-}
 
 // // Sätter opaciteten för down arrow.
 function setOpacityForDownArrow() {
@@ -211,6 +244,78 @@ function changeClassOnActivityText() {
         }
         else {
             a.querySelector("P").className = "activity-text-checked";
+        }
+    })
+}
+
+// // Tar bort en aktivitet från webbläsaren och även i activities[].
+// // activities[] filtrerar bort den man valt att ta bort.
+function removeActivity(clone) {
+    clone.remove();
+    activities = activities.filter(a => a.id !== clone.id);
+    visibilityDownArrow();
+    visibilityClearCompleted();
+}
+
+function clearCompletedActivities() {
+    activities.forEach(a => {
+        if (a.querySelector('input[name="checkbox-input"]')
+            .checked === true) {
+            removeActivity(a);
+        }
+    })
+}
+
+function filterAllActivities() {
+    activities.forEach(a =>
+        a.style.display = "flex");
+}
+
+function filteringActivities(e) {
+    activities.forEach(a => {
+        if (e.type === "submit") {
+            if (filteringOption === "") {
+                a.style.display = "flex";
+            }
+            else if (filteringOption === "filter-active" && a.querySelector('input[name="checkbox-input"]')
+                .checked === false) {
+                a.style.display = "flex";
+            }
+            else if (filteringOption === "filter-completed" && a.querySelector('input[name="checkbox-input"]')
+                .checked === true) {
+                a.style.display = "flex";
+            }
+            else {
+                a.style.display = "none";
+            }
+        }
+
+        // Vid click.
+        else {
+            if (e.currentTarget.className === "filter-completed") {
+                filteringOption = e.currentTarget.className;
+
+                if (a.querySelector('input[name="checkbox-input"]')
+                    .checked === true) {
+
+                    a.style.display = "flex";
+                }
+                else {
+                    a.style.display = "none";
+                }
+            }
+
+            else {
+                if (a.querySelector('input[name="checkbox-input"]')
+                    .checked === true) {
+
+                    a.style.display = "none";
+                }
+                else {
+                    a.style.display = "flex";
+                }
+                filteringOption = e.currentTarget.className;
+            }
         }
     })
 }
