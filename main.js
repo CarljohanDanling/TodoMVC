@@ -10,20 +10,22 @@ const activity = document.querySelector("#activity");
 activity.remove();
 
 const selectionSection = document.querySelector(".selector-section");
-const clearCompleted = document.querySelector("#clear-completed");
-const filterAll = document.querySelector(".filter-all");
-const filterActive = document.querySelector(".filter-active");
-const filterCompleted = document.querySelector(".filter-completed");
+const clearCompleted = document.querySelector("#clear-completed-div");
+const filterAll = document.querySelector("#filter-all");
+const filterActive = document.querySelector("#filter-active");
+const filterCompleted = document.querySelector("#filter-completed");
 
 // Funktioner och EventListener börjar här -->
-filterAll.addEventListener("click", filteringAll);
+filterAll.addEventListener("click", (event) => {
+    onClickSectionFiltering(event);
+});
 
 filterActive.addEventListener("click", (event) => {
-    filteringActiveOrCompleted(event);
+    onClickSectionFiltering(event);
 })
 
 filterCompleted.addEventListener("click", (event) => {
-    filteringActiveOrCompleted(event);
+    onClickSectionFiltering(event);
 })
 
 clearCompleted.addEventListener("click", () => {
@@ -132,6 +134,10 @@ function filteringClone(clone) {
         else {
             clone.style.display = "none";
         }
+    }
+
+    else {
+        clone.style.display = "flex";
     }
 }
 
@@ -277,14 +283,9 @@ function clearCompletedActivities() {
     })
 }
 
-function filteringAll() {
-    activities.forEach(a =>
-        a.style.display = "flex");
-}
-
-function filteringActiveOrCompleted(e) {
+function onClickSectionFiltering(e) {
     activities.forEach(a => {
-        if (e.currentTarget.className === "filter-completed") {
+        if (e.currentTarget.id === "filter-completed") {
 
             if (a.querySelector('input[name="checkbox-input"]')
                 .checked === true) {
@@ -294,19 +295,37 @@ function filteringActiveOrCompleted(e) {
             else {
                 a.style.display = "none";
             }
-            filteringOption = e.currentTarget.className;
+
+            filteringOption = e.currentTarget.id;
+            filterAll.className = "non-selected";
+            filterActive.className = "non-selected";
+            filterCompleted.className = "selected";
+        }
+
+        else if (e.currentTarget.id === "filter-active") {
+            if (a.querySelector('input[name="checkbox-input"]')
+                .checked === true) {
+
+                a.style.display = "none";
+            }
+            
+            else {
+                a.style.display = "flex";
+            }
+            filteringOption = e.currentTarget.id;
+            filterAll.className = "non-selected";
+            filterActive.className = "selected";
+            filterCompleted.className = "non-selected";
         }
 
         else {
-            if (a.querySelector('input[name="checkbox-input"]')
-                .checked === true) {
+            activities.forEach(a =>
+                a.style.display = "flex");
 
-                a.style.display = "none";
-            }
-            else {
-                a.style.display = "flex";
-            }
-            filteringOption = e.currentTarget.className;
+            filteringOption = e.currentTarget.id;
+            filterAll.className = "selected";
+            filterActive.className = "non-selected";
+            filterCompleted.className = "non-selected";
         }
     })
 }
