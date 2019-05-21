@@ -1,11 +1,8 @@
-// sätt alla eventlisteners i början av programmet - "Jakob Kallin"
-
 // Diverse deklarationer.
 let activities = [];
 let activitiesToRemove = [];
 let activityIdCounter = 0;
 let filteringOption = "";
-
 const selectArrow = document.querySelector("#down-arrow");
 selectArrow.remove();
 
@@ -19,25 +16,28 @@ const filterActive = document.querySelector(".filter-active");
 const filterCompleted = document.querySelector(".filter-completed");
 
 // Funktioner och EventListener börjar här -->
-filterAll.addEventListener("click", filterAllActivities);
+filterAll.addEventListener("click", filteringAll);
 
 filterActive.addEventListener("click", (event) => {
-    filteringActivities(event);
+    filteringActiveOrCompleted(event);
 })
 
 filterCompleted.addEventListener("click", (event) => {
-    filteringActivities(event);
+    filteringActiveOrCompleted(event);
 })
 
-clearCompleted.addEventListener("click", clearCompletedActivities);
+clearCompleted.addEventListener("click", () => {
+    clearCompletedActivities();
+    visibilitySelectionSection();
+})
 
-// eventListener för "markera/avmarkera alla aktiviteter-pilen".
-selectArrow.addEventListener("click", () => {
+selectArrow.addEventListener("click", (event) => {
     if (checkIfAllActivtiesAreChecked() === true) {
         activities.forEach(a => {
             a.querySelector('input[name="checkbox-input"]')
                 .checked = false;
             activityToggleStatus(a);
+            filteringClone(a);
         })
         setOpacityForDownArrow();
     }
@@ -46,6 +46,7 @@ selectArrow.addEventListener("click", () => {
             a.querySelector('input[name="checkbox-input"]')
                 .checked = true;
             activityToggleStatus(a);
+            filteringClone(a);
         })
         setOpacityForDownArrow();
     }
@@ -63,17 +64,17 @@ form.onsubmit = event => {
     const text = document.createTextNode(userInput.value);
 
     renderActivity(text);
-    visabilitySelectionSection();
+    visibilitySelectionSection();
     renderDownArrow();
     setOpacityForDownArrow();
     visibilityDownArrow();
-    filteringActivities(event);
+
 
     activityIdCounter += 1;
     form.reset();
 }
 
-// Renderar aktiviteten och sätter lägger till i activities[].
+// Renderar aktiviteten och lägger till i activities[].
 // Lägger till relaterade eventlisteners på checkbox och "remove" krysset. 
 function renderActivity(text) {
     let clone = activity.cloneNode(true);
@@ -94,32 +95,47 @@ function renderActivity(text) {
             itemsLeftManager();
             changeClassOnActivityText();
             visibilityClearCompleted();
-            visibilityFiltering(clone);
+            filteringClone(clone);
         })
 
     clone.querySelector(".removal-sign")
         .addEventListener("click", () => {
             removeActivity(clone);
-            visabilitySelectionSection();
+            visibilitySelectionSection();
             setOpacityForDownArrow();
             itemsLeftManager();
             visibilityClearCompleted();
         });
     itemsLeftManager();
     removalSignActivity(clone);
+    filteringClone(clone);
 }
 
-function visibilityFiltering(clone) {
-    if (filteringOption === "filter-completed") {
-        clone.style.display = "none";
+function filteringClone(clone) {
+    if (filteringOption === "") {
+        clone.style.display = "flex";
+    }
+
+    else if (filteringOption === "filter-completed") {
+        if (clone.querySelector('input[name="checkbox-input"]').checked === true) {
+            clone.style.display = "flex";
+        }
+        else {
+            clone.style.display = "none";
+        }
     }
 
     else if (filteringOption === "filter-active") {
-        clone.style.display = "none";
+        if (clone.querySelector('input[name="checkbox-input"]').checked === false) {
+            clone.style.display = "flex";
+        }
+        else {
+            clone.style.display = "none";
+        }
     }
 }
 
-function visabilitySelectionSection() {
+function visibilitySelectionSection() {
     if (activities.length > 0) {
         selectionSection
             .className = "selector-section-visible";
@@ -130,9 +146,7 @@ function visabilitySelectionSection() {
     }
 }
 
-// Renderar down arrow enbart om EN aktivitet finns i activities[].
-// Om det är > 1 så gör funktionen inget.
-// Om det är 0 aktiviteter i activities[] så tas down arrow bort.
+// Renderar down arrow.
 function renderDownArrow() {
     if (document.getElementById("down-arrow") === null) {
         document.querySelector("#toggle-all")
@@ -205,8 +219,7 @@ function removalSignActivity(clone) {
     });
 }
 
-
-// // Sätter opaciteten för down arrow.
+// Sätter opaciteten för down arrow.
 function setOpacityForDownArrow() {
     if (checkIfAllActivtiesAreChecked() === true) {
         selectArrow.closest("div").style.opacity = "1.0";
@@ -248,8 +261,6 @@ function changeClassOnActivityText() {
     })
 }
 
-// // Tar bort en aktivitet från webbläsaren och även i activities[].
-// // activities[] filtrerar bort den man valt att ta bort.
 function removeActivity(clone) {
     clone.remove();
     activities = activities.filter(a => a.id !== clone.id);
@@ -266,56 +277,36 @@ function clearCompletedActivities() {
     })
 }
 
-function filterAllActivities() {
+function filteringAll() {
     activities.forEach(a =>
         a.style.display = "flex");
 }
 
-function filteringActivities(e) {
+function filteringActiveOrCompleted(e) {
     activities.forEach(a => {
-        if (e.type === "submit") {
-            if (filteringOption === "") {
-                a.style.display = "flex";
-            }
-            else if (filteringOption === "filter-active" && a.querySelector('input[name="checkbox-input"]')
-                .checked === false) {
-                a.style.display = "flex";
-            }
-            else if (filteringOption === "filter-completed" && a.querySelector('input[name="checkbox-input"]')
+        if (e.currentTarget.className === "filter-completed") {
+
+            if (a.querySelector('input[name="checkbox-input"]')
                 .checked === true) {
+
                 a.style.display = "flex";
             }
             else {
                 a.style.display = "none";
             }
+            filteringOption = e.currentTarget.className;
         }
 
-        // Vid click.
         else {
-            if (e.currentTarget.className === "filter-completed") {
-                filteringOption = e.currentTarget.className;
+            if (a.querySelector('input[name="checkbox-input"]')
+                .checked === true) {
 
-                if (a.querySelector('input[name="checkbox-input"]')
-                    .checked === true) {
-
-                    a.style.display = "flex";
-                }
-                else {
-                    a.style.display = "none";
-                }
+                a.style.display = "none";
             }
-
             else {
-                if (a.querySelector('input[name="checkbox-input"]')
-                    .checked === true) {
-
-                    a.style.display = "none";
-                }
-                else {
-                    a.style.display = "flex";
-                }
-                filteringOption = e.currentTarget.className;
+                a.style.display = "flex";
             }
+            filteringOption = e.currentTarget.className;
         }
     })
 }
