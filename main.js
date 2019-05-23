@@ -16,16 +16,29 @@ const filterActive = document.querySelector("#filter-active");
 const filterCompleted = document.querySelector("#filter-completed");
 
 // Funktioner och EventListener börjar här -->
+
+window.addEventListener("hashchange", () => {
+    if (location.hash === "#active") {
+        onClickSectionFiltering("filter-active");
+    }
+    else if (location.hash === "#completed") {
+        onClickSectionFiltering("filter-completed");
+    }
+    else {
+        onClickSectionFiltering("filter-all");
+    }
+});
+
 filterAll.addEventListener("click", (event) => {
-    onClickSectionFiltering(event);
+    location.hash = "#";
 });
 
 filterActive.addEventListener("click", (event) => {
-    onClickSectionFiltering(event);
+    location.hash = "#active";
 })
 
 filterCompleted.addEventListener("click", (event) => {
-    onClickSectionFiltering(event);
+    location.hash = "#completed";
 })
 
 clearCompleted.addEventListener("click", () => {
@@ -71,7 +84,6 @@ form.onsubmit = event => {
     setOpacityForDownArrow();
     visibilityDownArrow();
 
-
     activityIdCounter += 1;
     form.reset();
 }
@@ -105,9 +117,21 @@ function renderActivity(text) {
             removeActivity(clone);
             visibilitySelectionSection();
             setOpacityForDownArrow();
-            itemsLeftManager();
             visibilityClearCompleted();
         });
+
+    clone.querySelector(".activity-text")
+        .addEventListener("dblclick", () => {
+            clone.querySelector(".checkbox-area")
+                .classList.toggle("checkbox-area-edit");
+            toggleVisibilityActivityTextAndInput(clone);
+        });
+
+    clone.querySelector(".edit-activity-text")
+        .addEventListener("keydown", () => {
+            editActivityText(clone);
+        });
+
     itemsLeftManager();
     removalSignActivity(clone);
     filteringClone(clone);
@@ -115,12 +139,12 @@ function renderActivity(text) {
 
 function filteringClone(clone) {
     if (filteringOption === "") {
-        clone.style.display = "flex";
+        clone.style.display = "grid";
     }
 
     else if (filteringOption === "filter-completed") {
         if (clone.querySelector('input[name="checkbox-input"]').checked === true) {
-            clone.style.display = "flex";
+            clone.style.display = "grid";
         }
         else {
             clone.style.display = "none";
@@ -129,7 +153,7 @@ function filteringClone(clone) {
 
     else if (filteringOption === "filter-active") {
         if (clone.querySelector('input[name="checkbox-input"]').checked === false) {
-            clone.style.display = "flex";
+            clone.style.display = "grid";
         }
         else {
             clone.style.display = "none";
@@ -137,7 +161,7 @@ function filteringClone(clone) {
     }
 
     else {
-        clone.style.display = "flex";
+        clone.style.display = "grid";
     }
 }
 
@@ -272,6 +296,7 @@ function removeActivity(clone) {
     activities = activities.filter(a => a.id !== clone.id);
     visibilityDownArrow();
     visibilityClearCompleted();
+    itemsLeftManager();
 }
 
 function clearCompletedActivities() {
@@ -283,36 +308,36 @@ function clearCompletedActivities() {
     })
 }
 
-function onClickSectionFiltering(e) {
+function onClickSectionFiltering(comparisonFilter) {
     activities.forEach(a => {
-        if (e.currentTarget.id === "filter-completed") {
+        if (comparisonFilter === "filter-completed") {
 
             if (a.querySelector('input[name="checkbox-input"]')
                 .checked === true) {
 
-                a.style.display = "flex";
+                a.style.display = "grid";
             }
             else {
                 a.style.display = "none";
             }
 
-            filteringOption = e.currentTarget.id;
+            filteringOption = comparisonFilter;
             filterAll.className = "non-selected";
             filterActive.className = "non-selected";
             filterCompleted.className = "selected";
         }
 
-        else if (e.currentTarget.id === "filter-active") {
+        else if (comparisonFilter === "filter-active") {
             if (a.querySelector('input[name="checkbox-input"]')
                 .checked === true) {
 
                 a.style.display = "none";
             }
-            
+
             else {
-                a.style.display = "flex";
+                a.style.display = "grid";
             }
-            filteringOption = e.currentTarget.id;
+            filteringOption = comparisonFilter
             filterAll.className = "non-selected";
             filterActive.className = "selected";
             filterCompleted.className = "non-selected";
@@ -320,12 +345,59 @@ function onClickSectionFiltering(e) {
 
         else {
             activities.forEach(a =>
-                a.style.display = "flex");
+                a.style.display = "grid");
 
-            filteringOption = e.currentTarget.id;
+            filteringOption = comparisonFilter
             filterAll.className = "selected";
             filterActive.className = "non-selected";
             filterCompleted.className = "non-selected";
         }
     })
+}
+
+function checkStatusForActivityText(clone) {
+    let activityText;
+    let changeText = clone.querySelector(".edit-activity-text");
+
+    if (clone.querySelector('input[name="checkbox-input"]')
+        .checked === true) {
+        activityText = clone.querySelector(".activity-text-checked");
+    } else {
+        activityText = clone.querySelector(".activity-text");
+    }
+    return [activityText, changeText];
+}
+
+function toggleVisibilityActivityTextAndInput(clone, event) {
+    let arrayOfItems = checkStatusForActivityText(clone);
+
+    let activityText = arrayOfItems[0];
+    let changeText = arrayOfItems[1];
+
+    activityText.hidden = true;
+    changeText.hidden = false;
+    changeText.focus();
+    changeText.value = activityText.textContent;
+}
+
+function editActivityText(clone) {
+    let arrayOfItems = checkStatusForActivityText(clone);
+
+    let activityText = arrayOfItems[0];
+    let changeText = arrayOfItems[1];
+
+    if (event.keyCode === 13) {
+        if (changeText.value.length > 0) {
+            activityText.hidden = false;
+            changeText.hidden = true;
+            activityText.textContent = changeText.value;
+
+            clone.querySelector(".checkbox-area")
+                .classList.toggle("checkbox-area-edit");
+        }
+        else {
+            removeActivity(clone);
+            visibilitySelectionSection();
+        }
+    }
 }

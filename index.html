@@ -35,11 +35,11 @@
             </section>
 
             <section id="activity-section">
-                <div id="activity" class="fields-styling">
-                    <div>
+                <div id="activity" class="activity-styling">
+                    <div class="checkbox-area">
                         <label class="checkbox">
                                 <input type="checkbox" name="checkbox-input" id="checkbox-input">
-                                <svg style="display: block" class="unchecked" version="1.1"
+                                <svg class="unchecked" version="1.1"
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="24" height="24" viewBox="0 0 32 32">
                                     <path
@@ -61,8 +61,9 @@
                                 </svg>
                         </label>
                     </div>
-                    <div style="position: relative">
+                    <div class="activity-text-wrapper">
                         <p class="activity-text"></p>
+                        <input class="edit-activity-text" type="text" hidden>
                         <svg class="removal-sign" version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 512 512">
                                 <path
                                     d="M507.331
@@ -104,8 +105,8 @@
                 <nav>
                     <ul id="filtering">
                         <li><a id="filter-all" class="non-selected" href="#">All</a></li>
-                        <li><a id="filter-active" class="non-selected" href="#">Active</a></li>
-                        <li><a id="filter-completed" class="non-selected" href="#">Completed</a></li>
+                        <li><a id="filter-active" class="non-selected" href="#active">Active</a></li>
+                        <li><a id="filter-completed" class="non-selected" href="#completed">Completed</a></li>
                     </ul>
                 </nav>
                 <div id="clear-completed-div">
