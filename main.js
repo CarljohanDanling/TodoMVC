@@ -1,4 +1,7 @@
 // Diverse deklarationer.
+let itemsArray = [];
+let currentActivityStatus;
+
 let activities = [];
 let activitiesToRemove = [];
 let activityIdCounter = 0;
@@ -18,6 +21,9 @@ const filterActive = document.querySelector("#filter-active");
 const filterCompleted = document.querySelector("#filter-completed");
 
 // Funktioner och EventListener börjar här -->
+
+// window.addEventListener("load", localStorageLoad, false);
+window.addEventListener("unload", localStorageSave, false);
 
 window.addEventListener("hashchange", () => {
     if (location.hash === "#active") {
@@ -81,18 +87,14 @@ form.onsubmit = event => {
     const text = document.createTextNode(userInput.value);
 
     renderActivity(text);
-    visibilitySelectionSection();
-    renderDownArrow();
-    setOpacityForDownArrow();
-    visibilityDownArrow();
 
-    activityIdCounter += 1;
+
     form.reset();
 }
 
 // Renderar aktiviteten och lägger till i activities[].
 // Lägger till relaterade eventlisteners på checkbox och "remove" krysset. 
-function renderActivity(text) {
+function renderActivity(actitivyText) {
     let clone = activity.cloneNode(true);
     clone.id = clone.id + activityIdCounter;
 
@@ -100,7 +102,7 @@ function renderActivity(text) {
         .appendChild(clone);
 
     clone.querySelector("P")
-        .appendChild(text);
+        .appendChild(actitivyText);
 
     activities.push(clone);
 
@@ -133,10 +135,14 @@ function renderActivity(text) {
         .addEventListener("keydown", () => {
             editActivityText(clone);
         });
-
     itemsLeftManager();
+    visibilitySelectionSection();
+    renderDownArrow();
+    setOpacityForDownArrow();
+    visibilityDownArrow();
     removalSignActivity(clone);
     filteringClone(clone);
+    activityIdCounter += 1;
 }
 
 function filteringClone(clone) {
@@ -225,7 +231,7 @@ function checkIfAllActivtiesAreChecked() {
     }
 }
 
-// Sätter CSS-attribut på unchecked och checked SVG.
+// Sätter CSS-attribut.
 function activityToggleStatus(clone) {
     let checkbox = clone.querySelector('input[name="checkbox-input"]');
 
@@ -355,6 +361,7 @@ function onClickSectionFiltering(comparisonFilter) {
             filterCompleted.className = "non-selected";
         }
     })
+    localStorage.setItem('filtering', JSON.stringify(comparisonFilter));
 }
 
 function checkStatusForActivityText(clone) {
@@ -402,4 +409,24 @@ function editActivityText(clone) {
             visibilitySelectionSection();
         }
     }
+}
+
+function localStorageLoad() {
+    itemsArray = localStorage.getItem("Todo") ? JSON.parse(localStorage.getItem("Todo")) : []
+    currentActivityStatus = localStorage.getItem("filtering");
+
+    itemsArray.forEach(a => {
+        let activityText = document.createTextNode(a.activityText);
+        let activityStatus = document.createTextNode(a.activityStatus);
+        renderActivity(activityText, activityStatus);
+    })
+}
+
+function localStorageSave() {
+    const toDoObjects = activities.map(a => new Object({
+        activityText: a.querySelector("P").textContent,
+        activityStatus: a.querySelector('input[name="checkbox-input"]').checked ? "completed" : "active"
+    }));
+
+    localStorage.setItem("Todo", JSON.stringify(toDoObjects));
 }

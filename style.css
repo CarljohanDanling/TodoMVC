@@ -60,6 +60,7 @@ body {
     border: none;
     width: 100%;
     box-sizing: border-box;
+    outline: none;
 }
 
 #todo-input::placeholder {
@@ -95,7 +96,7 @@ body {
     font-size: inherit;
     border: none;
     width: 100%;
-    
+    outline: 1px solid gray;
 }
 
 input[type=checkbox] {
@@ -124,6 +125,7 @@ input[type=checkbox] {
     margin-right: 1em;
     word-break: break-all;
     padding: 1em 0em 1em 0em;
+    width: 100%;
 }
 
 .activity-text-checked {
@@ -146,12 +148,12 @@ input[type=checkbox] {
 
 .removal-sign {
     cursor: default;
-    content: 'x';
     opacity: 0.5;
     color: #e5a2a2;
     visibility: hidden;
     position: absolute;
     right: 10px;
+    display: block;
 }
 
 .removal-sign:hover {
