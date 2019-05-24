@@ -4,6 +4,26 @@
     padding: 0;
 }
 
+#down-arrow{
+    display: block;
+    width: 10px;
+    height: 10px;
+    border: solid black;
+    border-width: 0px 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkmark {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 10px;
+    border: solid lightgreen;
+    border-width: 0 2px 2px 0;
+    transform: rotate(39deg);
+    padding-bottom: 2px;
+}
+
 body {
     background-color: #f5f5f5;
     font-family: Arial, Helvetica, sans-serif;
@@ -32,7 +52,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.2;
 }
 
 #todo-input {
@@ -85,10 +104,20 @@ input[type=checkbox] {
 
 .checked {
     display: none;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ededed;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
 }
 
 .unchecked {
     display: block;
+    border: 2px solid #ededed;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
 }
 
 .activity-text {
@@ -116,11 +145,13 @@ input[type=checkbox] {
 } 
 
 .removal-sign {
+    cursor: default;
+    content: 'x';
     opacity: 0.5;
-    fill: #e5a2a2;
+    color: #e5a2a2;
     visibility: hidden;
     position: absolute;
-    right: 5px;
+    right: 10px;
 }
 
 .removal-sign:hover {

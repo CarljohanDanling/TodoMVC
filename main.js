@@ -6,6 +6,8 @@ let filteringOption = "";
 const selectArrow = document.querySelector("#down-arrow");
 selectArrow.remove();
 
+const toggleAll = document.querySelector("#toggle-all")
+
 const activity = document.querySelector("#activity");
 activity.remove();
 
@@ -46,7 +48,7 @@ clearCompleted.addEventListener("click", () => {
     visibilitySelectionSection();
 })
 
-selectArrow.addEventListener("click", (event) => {
+toggleAll.addEventListener("click", (event) => {
     if (checkIfAllActivtiesAreChecked() === true) {
         activities.forEach(a => {
             a.querySelector('input[name="checkbox-input"]')
@@ -229,7 +231,7 @@ function activityToggleStatus(clone) {
 
     if (checkbox.checked === true) {
         clone.querySelector(".unchecked").style.display = "none";
-        clone.querySelector(".checked").style.display = "block";
+        clone.querySelector(".checked").style.display = "flex";
     } else {
         clone.querySelector(".unchecked").style.display = "block";
         clone.querySelector(".checked").style.display = "none";
