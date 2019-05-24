@@ -22,7 +22,7 @@ const filterCompleted = document.querySelector("#filter-completed");
 
 // Funktioner och EventListener börjar här -->
 
-// window.addEventListener("load", localStorageLoad, false);
+// window.addEventListener("load", localStorageLoad, false); Under bearbetning...
 window.addEventListener("unload", localStorageSave, false);
 
 window.addEventListener("hashchange", () => {
@@ -87,8 +87,6 @@ form.onsubmit = event => {
     const text = document.createTextNode(userInput.value);
 
     renderActivity(text);
-
-
     form.reset();
 }
 
@@ -135,6 +133,7 @@ function renderActivity(actitivyText) {
         .addEventListener("keydown", () => {
             editActivityText(clone);
         });
+
     itemsLeftManager();
     visibilitySelectionSection();
     renderDownArrow();
@@ -142,30 +141,19 @@ function renderActivity(actitivyText) {
     visibilityDownArrow();
     removalSignActivity(clone);
     filteringClone(clone);
+
     activityIdCounter += 1;
 }
 
 function filteringClone(clone) {
-    if (filteringOption === "") {
-        clone.style.display = "grid";
-    }
+    const inputValue = clone.querySelector('input[name="checkbox-input"]').checked;
 
-    else if (filteringOption === "filter-completed") {
-        if (clone.querySelector('input[name="checkbox-input"]').checked === true) {
-            clone.style.display = "grid";
-        }
-        else {
-            clone.style.display = "none";
-        }
+    if (filteringOption === "filter-completed") {
+        inputValue === true ? clone.style.display = "grid" : clone.style.display = "none";
     }
 
     else if (filteringOption === "filter-active") {
-        if (clone.querySelector('input[name="checkbox-input"]').checked === false) {
-            clone.style.display = "grid";
-        }
-        else {
-            clone.style.display = "none";
-        }
+        inputValue === false ? clone.style.display = "grid" : clone.style.display = "none";
     }
 
     else {
@@ -224,11 +212,7 @@ function checkIfAllActivtiesAreChecked() {
         }
     })
 
-    if (counter === activities.length) {
-        return true;
-    } else {
-        return false;
-    }
+    return counter === activities.length ? true : false;
 }
 
 // Sätter CSS-attribut.
@@ -289,13 +273,10 @@ function itemsLeftManager() {
 
 function changeClassOnActivityText() {
     activities.forEach(a => {
-        if (a.querySelector('input[name="checkbox-input"]')
-            .checked === false) {
-            a.querySelector("P").className = "activity-text";
-        }
-        else {
-            a.querySelector("P").className = "activity-text-checked";
-        }
+        const inputValue = a.querySelector('input[name="checkbox-input"]').checked;
+        let className = a.querySelector("P").className;
+
+        inputValue === false ? className = "activity-text" : className = "activity-text-checked";
     })
 }
 
@@ -318,37 +299,24 @@ function clearCompletedActivities() {
 
 function onClickSectionFiltering(comparisonFilter) {
     activities.forEach(a => {
-        if (comparisonFilter === "filter-completed") {
+        const inputValue = a.querySelector('input[name="checkbox-input"]').checked;
 
-            if (a.querySelector('input[name="checkbox-input"]')
-                .checked === true) {
+        if (comparisonFilter === "filter-active") {
+            inputValue === true ? a.style.display = "none" : a.style.display = "grid";
 
-                a.style.display = "grid";
-            }
-            else {
-                a.style.display = "none";
-            }
+            filteringOption = comparisonFilter
+            filterAll.className = "non-selected";
+            filterActive.className = "selected";
+            filterCompleted.className = "non-selected";
+        }
+
+        else if (comparisonFilter === "filter-completed") {
+            inputValue === true ? a.style.display = "grid" : a.style.display = "none";
 
             filteringOption = comparisonFilter;
             filterAll.className = "non-selected";
             filterActive.className = "non-selected";
             filterCompleted.className = "selected";
-        }
-
-        else if (comparisonFilter === "filter-active") {
-            if (a.querySelector('input[name="checkbox-input"]')
-                .checked === true) {
-
-                a.style.display = "none";
-            }
-
-            else {
-                a.style.display = "grid";
-            }
-            filteringOption = comparisonFilter
-            filterAll.className = "non-selected";
-            filterActive.className = "selected";
-            filterCompleted.className = "non-selected";
         }
 
         else {
@@ -367,9 +335,9 @@ function onClickSectionFiltering(comparisonFilter) {
 function checkStatusForActivityText(clone) {
     let activityText;
     let changeText = clone.querySelector(".edit-activity-text");
+    const inputValue = clone.querySelector('input[name="checkbox-input"]')
 
-    if (clone.querySelector('input[name="checkbox-input"]')
-        .checked === true) {
+    if (inputValue === true) {
         activityText = clone.querySelector(".activity-text-checked");
     } else {
         activityText = clone.querySelector(".activity-text");
