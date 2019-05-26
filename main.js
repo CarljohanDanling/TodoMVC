@@ -22,7 +22,7 @@ const filterCompleted = document.querySelector("#filter-completed");
 
 // Funktioner och EventListener börjar här -->
 
-// window.addEventListener("load", localStorageLoad, false); Under bearbetning...
+window.addEventListener("load", localStorageLoad, false);
 window.addEventListener("unload", localStorageSave, false);
 
 window.addEventListener("hashchange", () => {
@@ -90,9 +90,18 @@ form.onsubmit = event => {
     form.reset();
 }
 
+function toTryANewIdea(clone, activityStatus) {
+    activityToggleStatus(clone, activityStatus);
+    setOpacityForDownArrow();
+    itemsLeftManager();
+    changeClassOnActivityText();
+    visibilityClearCompleted();
+    filteringClone(clone);
+}
+
 // Renderar aktiviteten och lägger till i activities[].
 // Lägger till relaterade eventlisteners på checkbox och "remove" krysset. 
-function renderActivity(actitivyText) {
+function renderActivity(activityText, activityStatus) {
     let clone = activity.cloneNode(true);
     clone.id = clone.id + activityIdCounter;
 
@@ -100,18 +109,15 @@ function renderActivity(actitivyText) {
         .appendChild(clone);
 
     clone.querySelector("P")
-        .appendChild(actitivyText);
+        .appendChild(activityText);
 
     activities.push(clone);
 
+    toTryANewIdea(clone, activityStatus);
+
     clone.querySelector("#checkbox-input")
         .addEventListener("change", (event) => {
-            activityToggleStatus(clone);
-            setOpacityForDownArrow();
-            itemsLeftManager();
-            changeClassOnActivityText();
-            visibilityClearCompleted();
-            filteringClone(clone);
+            toTryANewIdea(clone, activityStatus);
         })
 
     clone.querySelector(".removal-sign")
@@ -216,15 +222,31 @@ function checkIfAllActivtiesAreChecked() {
 }
 
 // Sätter CSS-attribut.
-function activityToggleStatus(clone) {
+function activityToggleStatus(clone, activityStatus) {
     let checkbox = clone.querySelector('input[name="checkbox-input"]');
 
-    if (checkbox.checked === true) {
-        clone.querySelector(".unchecked").style.display = "none";
-        clone.querySelector(".checked").style.display = "flex";
-    } else {
-        clone.querySelector(".unchecked").style.display = "block";
-        clone.querySelector(".checked").style.display = "none";
+    if (activityStatus === undefined || activityStatus.textContent === "already-loaded") {
+        if (checkbox.checked === true) {
+            clone.querySelector(".unchecked").style.display = "none";
+            clone.querySelector(".checked").style.display = "flex";
+        } else {
+            clone.querySelector(".unchecked").style.display = "block";
+            clone.querySelector(".checked").style.display = "none";
+        }
+    }
+
+    else {
+        if (activityStatus.textContent === "completed") {
+            checkbox.checked = true;
+            clone.querySelector(".unchecked").style.display = "none";
+            clone.querySelector(".checked").style.display = "flex";
+        }
+        else {
+            checkbox.checked = false;
+            clone.querySelector(".unchecked").style.display = "block";
+            clone.querySelector(".checked").style.display = "none"
+        }
+        activityStatus.textContent = "already-loaded";
     }
 }
 
