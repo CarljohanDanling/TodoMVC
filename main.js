@@ -1,24 +1,19 @@
 // Diverse deklarationer.
-let itemsArray = [];
-let currentActivityStatus;
-
 let activities = [];
-let activitiesToRemove = [];
 let activityIdCounter = 0;
 let filteringOption = "";
-const selectArrow = document.querySelector("#down-arrow");
-selectArrow.remove();
 
 const toggleAll = document.querySelector("#toggle-all")
-
-const activity = document.querySelector("#activity");
-activity.remove();
-
-const selectionSection = document.querySelector(".selector-section");
 const clearCompleted = document.querySelector("#clear-completed-div");
 const filterAll = document.querySelector("#filter-all");
 const filterActive = document.querySelector("#filter-active");
 const filterCompleted = document.querySelector("#filter-completed");
+const selectionSection = document.querySelector(".selector-section");
+
+const selectArrow = document.querySelector("#down-arrow");
+selectArrow.remove();
+const activity = document.querySelector("#activity");
+activity.remove();
 
 // Funktioner och EventListener börjar här -->
 
@@ -26,15 +21,7 @@ window.addEventListener("load", localStorageLoad, false);
 window.addEventListener("unload", localStorageSave, false);
 
 window.addEventListener("hashchange", () => {
-    if (location.hash === "#active") {
-        onClickSectionFiltering("filter-active");
-    }
-    else if (location.hash === "#completed") {
-        onClickSectionFiltering("filter-completed");
-    }
-    else {
-        onClickSectionFiltering("filter-all");
-    }
+    hashManager();
 });
 
 filterAll.addEventListener("click", (event) => {
@@ -90,15 +77,6 @@ form.onsubmit = event => {
     form.reset();
 }
 
-function toTryANewIdea(clone, activityStatus) {
-    activityToggleStatus(clone, activityStatus);
-    setOpacityForDownArrow();
-    itemsLeftManager();
-    changeClassOnActivityText();
-    visibilityClearCompleted();
-    filteringClone(clone);
-}
-
 // Renderar aktiviteten och lägger till i activities[].
 // Lägger till relaterade eventlisteners på checkbox och "remove" krysset. 
 function renderActivity(activityText, activityStatus) {
@@ -113,11 +91,11 @@ function renderActivity(activityText, activityStatus) {
 
     activities.push(clone);
 
-    toTryANewIdea(clone, activityStatus);
+    updateCheckboxManager(clone, activityStatus);
 
     clone.querySelector("#checkbox-input")
         .addEventListener("change", (event) => {
-            toTryANewIdea(clone, activityStatus);
+            updateCheckboxManager(clone, activityStatus);
         })
 
     clone.querySelector(".removal-sign")
@@ -167,15 +145,29 @@ function filteringClone(clone) {
     }
 }
 
-function visibilitySelectionSection() {
-    if (activities.length > 0) {
-        selectionSection
-            .className = "selector-section-visible";
+function updateCheckboxManager(clone, activityStatus) {
+    activityToggleStatus(clone, activityStatus);
+    setOpacityForDownArrow();
+    itemsLeftManager();
+    changeClassOnActivityText();
+    visibilityClearCompleted();
+    filteringClone(clone);
+}
+
+function hashManager() {
+    if (location.hash === "#active") {
+        onClickSectionFiltering("filter-active");
+    }
+    else if (location.hash === "#completed") {
+        onClickSectionFiltering("filter-completed");
     }
     else {
-        selectionSection
-            .className = "selector-section";
+        onClickSectionFiltering("filter-all");
     }
+}
+
+function visibilitySelectionSection() {
+    activities.length > 0 ? selectionSection.className = "selector-section-visible" : selectionSection.className = "selector-section";
 }
 
 // Renderar down arrow.
@@ -190,21 +182,18 @@ function renderDownArrow() {
 }
 
 function visibilityClearCompleted() {
-    if (activities.some(a => a.querySelector('input[name="checkbox-input"]').checked === true)) {
-        clearCompleted.style.display = "block";
-    }
-    else {
-        clearCompleted.style.display = "none";
-    }
+    activities.some(a => {
+        if (a.querySelector('input[name="checkbox-input"]').checked === true) {
+            clearCompleted.style.display = "block";
+        }
+        else {
+            clearCompleted.style.display = "none";
+        }
+    })
 }
 
 function visibilityDownArrow() {
-    if (activities.length >= 1) {
-        selectArrow.style.visibility = "visible";
-    }
-    else {
-        selectArrow.style.visibility = "hidden";
-    }
+    activities.length >= 1 ? selectArrow.style.visibility = "visible" : selectArrow.style.visibility = "hidden";
 }
 
 // Kontrollerar om alla aktiviteter har input "checked" eller ej.
@@ -351,7 +340,7 @@ function onClickSectionFiltering(comparisonFilter) {
             filterCompleted.className = "non-selected";
         }
     })
-    localStorage.setItem('filtering', JSON.stringify(comparisonFilter));
+    localStorage.setItem('filtering', JSON.stringify(location.hash));
 }
 
 function checkStatusForActivityText(clone) {
@@ -381,7 +370,6 @@ function toggleVisibilityActivityTextAndInput(clone, event) {
 
 function editActivityText(clone) {
     let arrayOfItems = checkStatusForActivityText(clone);
-
     let activityText = arrayOfItems[0];
     let changeText = arrayOfItems[1];
 
@@ -402,14 +390,16 @@ function editActivityText(clone) {
 }
 
 function localStorageLoad() {
-    itemsArray = localStorage.getItem("Todo") ? JSON.parse(localStorage.getItem("Todo")) : []
-    currentActivityStatus = localStorage.getItem("filtering");
+    let loadedItemsArray = localStorage.getItem("Todo") ? JSON.parse(localStorage.getItem("Todo")) : []
+    let currentActivityStatus = JSON.parse(localStorage.getItem("filtering"));
 
-    itemsArray.forEach(a => {
+    loadedItemsArray.forEach(a => {
         let activityText = document.createTextNode(a.activityText);
         let activityStatus = document.createTextNode(a.activityStatus);
         renderActivity(activityText, activityStatus);
     })
+    location.hash = currentActivityStatus;
+    hashManager();
 }
 
 function localStorageSave() {
@@ -417,6 +407,5 @@ function localStorageSave() {
         activityText: a.querySelector("P").textContent,
         activityStatus: a.querySelector('input[name="checkbox-input"]').checked ? "completed" : "active"
     }));
-
     localStorage.setItem("Todo", JSON.stringify(toDoObjects));
 }
