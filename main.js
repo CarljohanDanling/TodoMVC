@@ -311,22 +311,20 @@ function clearCompletedActivities() {
 function onClickSectionFiltering(comparisonFilter) {
     activities.forEach(a => {
         const inputValue = a.querySelector('input[name="checkbox-input"]').checked;
+        let listOfItems = [filterAll, filterActive, filterCompleted];
+        listOfItems.forEach(f => {
+            f.className = "non-selected";
+        });
 
         if (comparisonFilter === "filter-active") {
             inputValue === true ? a.style.display = "none" : a.style.display = "grid";
-
-            filteringOption = comparisonFilter
-            filterAll.className = "non-selected";
+            
             filterActive.className = "selected";
-            filterCompleted.className = "non-selected";
         }
 
         else if (comparisonFilter === "filter-completed") {
             inputValue === true ? a.style.display = "grid" : a.style.display = "none";
 
-            filteringOption = comparisonFilter;
-            filterAll.className = "non-selected";
-            filterActive.className = "non-selected";
             filterCompleted.className = "selected";
         }
 
@@ -334,12 +332,10 @@ function onClickSectionFiltering(comparisonFilter) {
             activities.forEach(a =>
                 a.style.display = "grid");
 
-            filteringOption = comparisonFilter
             filterAll.className = "selected";
-            filterActive.className = "non-selected";
-            filterCompleted.className = "non-selected";
         }
     })
+    filteringOption = comparisonFilter
     localStorage.setItem('filtering', JSON.stringify(location.hash));
 }
 
@@ -398,7 +394,8 @@ function localStorageLoad() {
         let activityStatus = document.createTextNode(a.activityStatus);
         renderActivity(activityText, activityStatus);
     })
-    location.hash = currentActivityStatus;
+
+    currentActivityStatus === null ? location.hash = "#" : location.hash = currentActivityStatus;
     hashManager();
 }
 
