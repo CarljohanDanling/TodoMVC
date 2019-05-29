@@ -311,8 +311,8 @@ function clearCompletedActivities() {
 function onClickSectionFiltering(comparisonFilter) {
     activities.forEach(a => {
         const inputValue = a.querySelector('input[name="checkbox-input"]').checked;
-        let listOfItems = [filterAll, filterActive, filterCompleted];
-        listOfItems.forEach(f => {
+        let listOFilterOptions = [filterAll, filterActive, filterCompleted];
+        listOFilterOptions.forEach(f => {
             f.className = "non-selected";
         });
 
